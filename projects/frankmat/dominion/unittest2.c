@@ -7,7 +7,6 @@ Date: 04/28/2018
 
 #include "dominion.h"
 #include "dominion_helpers.h"
-#include "interface.h"
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
@@ -23,184 +22,121 @@ void reportTestResults();
 int TESTSPASSED = 0;
 int TOTALTESTS = 0;
 
-/**********************************************************************************************
-** TEST UPDATING COINS
-** TEST FULL DECK COUNT
-** TEST ISGAMEOVER
-**/
-
 int main() {
 	int choice1 = 0;
 	int choice2 = 0;
 	int choice3 = 0;
 	struct gameState gameState, testState;
 
+	int cardCount;
+
 	int currentPlayer = 0;
-	int numPlayers = 4;
+	int numPlayers = 2;
 	int cards_in_game[10] = { adventurer, smithy, village, salvager, council_room, feast, mine, remodel, baron, great_hall };
 	int seed = 1;
 	initializeGame(numPlayers, cards_in_game, seed, &gameState);
 	memcpy(&testState, &gameState, sizeof(struct gameState));
 
-	/* Testing the playCard() function 	*/
-	printf("\nTESTING THE playCard() FUNCTION:\n\n");
-	playCard(1, choice1, choice2, choice3, &testState);
+	/* Testing the fullDeckCount function 	
+	** - Full Deck Count checks how many copies of a SPECIFIC 
+	** card exist, in total, for a player, including in their
+	** deck, hand, and discard pile.
+	*/
+	printf("\nTESTING THE fullDeckCount() FUNCTION:\n\n");
+	testState.hand[currentPlayer][4] = council_room;
 
-	printf("\tTesting playCard() does not execute during Phase 1.\n");
-	testState.phase = 1;
-	if (playCard(1, choice1, choice2, choice3, &testState) == -1) {
+	printf("\tTesting it correctly counts the copper coins.\n");
+	cardCount = fullDeckCount(currentPlayer, copper, &testState);
+	if (cardCount == 7) {
 		test_passed();
-	} else if (playCard(1, choice1, choice2, choice3, &testState) != -1) {
+	} else if (cardCount != 7) {
 		test_failed();
 
-		printf("\t\tplayCard() function should have failed due to wrong phase.\n");
+		printf("/t/tWrong number of copper coins - there should be 7.\n");
+		printf("/t/tInstead, found %d copper coins.\n", cardCount);
 	}
 
 	printf("\n");
 
-	printf("\tTesting playCard() executes successfully during Phase 0.\n");
-	testState.phase = 0;
-	testState.hand[currentPlayer][4] = 7;
-	if (playCard(4, choice1, choice2, choice3, &testState) == 0) {
-		test_passed();
-	} else if (playCard(4, choice1, choice2, choice3, &testState) != 0) {
-		test_failed();
-
-		printf("\t\tplayCard() function should be able to execute correctly in Phase 0.\n");
-	}
-
-	printf("\n");
-
-	/* Testing that playCard() does not execute if the player has 0 actions.*/
-	printf("\tTesting playCard() does not execute if player has 0 actions.\n");
-	testState.numActions = 0;
-	testState.hand[currentPlayer][4] = 7;
-	if (playCard(4, choice1, choice2, choice3, &testState) == -1) {
-		test_passed();
-	}
-	else if (playCard(4, choice1, choice2, choice3, &testState) != -1) {
-		test_failed();
-
-		printf("\t\tplayCard() executed with 0 available actions.\n");
-	}
-
-	printf("\n");
-
-	/* Testing that playCard() executes if the player has 1 action.*/
-	printf("\tTesting playCard() executes if the player has at least 1 action.\n");
-	testState.numActions = 1;
-	testState.hand[currentPlayer][4] = 7;
-	if (playCard(4, choice1, choice2, choice3, &testState) == 0) {
-		test_passed();
-	}
-	else if (playCard(4, choice1, choice2, choice3, &testState) != 0) {
-		test_failed();
-
-		printf("\t\tplayCard() failed to execute with 1 available action.\n");
-	}
-
-	printf("\n");
-
-	/* Testing that playCard() does not execute if the passed card is not an action card. */
-	printf("\tTesting playCard() does not execute if passed a non-action card.\n");
-	testState.numActions = 1;
-	testState.hand[currentPlayer][4] = 1;
-	if (playCard(4, choice1, choice2, choice3, &testState) == -1) {
-		test_passed();
-	}
-	else if (playCard(4, choice1, choice2, choice3, &testState) != 0) {
-		test_failed();
-
-		printf("\t\tplayCard() executed with a non-action card.\n");
-	}
-
-	printf("\n");
-
-	/* Testing that playCard() executes if it is passed an action card. */
-	printf("\tTesting playCard() executes if passed an action card.\n");
-	testState.numActions = 1;
-	testState.hand[currentPlayer][4] = 7;
-	if (playCard(4, choice1, choice2, choice3, &testState) == 0) {
-		test_passed();
-	}
-	else if (playCard(4, choice1, choice2, choice3, &testState) != 0) {
-		test_failed();
-
-		printf("\t\tplayCard() failed to execute with an action card.\n");
-	}
-
-	printf("\n");
-
-	/* Testing that playCard() exits if a card returns -1. */
-	printf("\tTesting playCard() exits if a card returns -1.\n");
-	testState.numActions = 1;
-	testState.hand[currentPlayer][4] = 10;
-	if (playCard(4, choice1, choice2, choice3, &testState) == -1 && testState.numActions == 1) {
-		test_passed();
-	}
-	else if (playCard(4, choice1, choice2, choice3, &testState) != -1 || testState.numActions != 1) {
-		test_failed();
-
-		printf("\t\tplayCard() didn't exit when a card failed and returnd -1.\n");
-	}
-
-	printf("\n");
-
-	/* Testing that playCard() reduces remaining actions after a card is played successfully. */
-	printf("\tTesting playCard() reduces actions after playing a card.\n");
-	testState.numActions = 1;
-	testState.hand[currentPlayer][4] = 7;
 	playCard(4, choice1, choice2, choice3, &testState);
-	if (testState.numActions == 0) {
+	printf("\tTesting it correctly counts cards in hand.\n");
+	if (testState.handCount[currentPlayer] == 8) {
 		test_passed();
-	}
-	else if (testState.numActions != 0) {
+	} else if (testState.handCount[currentPlayer] != 8) {
 		test_failed();
 
-		printf("\t\tplayCard() did not decrement the number of remaining actions.\n");
+		printf("\t\tShould be 8 cards in HAND after playing council room.\n");
+		printf("\t\tThere are %d cards in HAND.\n", testState.handCount[currentPlayer]);
 	}
 
 	printf("\n");
 
-	/* DISCOVERED: Embargo does not correctly add bonus coins!
-	** Instead, it add coins straight to the state.
-	** The way updateCoins works, is it counts treasure cards and then adds bonus coins.
-	** Embargo's cardEffect adds +2 coins, but in the playCard() method updateCoins is
-	** called afterwards, and it re-counts the coins, excluding Embargo's +2! 
+	printf("\tTesting it correctly counts cards in deck.\n");
+	if (testState.deckCount[currentPlayer] == 1) {
+		test_passed();
+	}
+	else if (testState.deckCount[currentPlayer] != 1) {
+		test_failed();
+	
+		printf("\t\tShould be 1 cards in DECK after playing council room.\n");
+		printf("\t\tThere are %d cards in DECK.\n", testState.deckCount[currentPlayer]);
+	}
+
+	printf("\n");
+
+	/* DISCOVERED that discardCard() function isn't actually tracking
+	** the number of discarded cards.  Which points out why it's
+	** unreliable to rely on other functions you haven't tested.
+	** 
+	** Things are discarded from the HAND, but then not actually
+	** added to a DISCARD pile.
 	*/
 
-	/* Testing that playCard() successfully adds coins as a card effect. */
-	printf("\tTesting playCard() adds coins as a card effect.\n");
-	testState.numActions = 1;
-	testState.hand[currentPlayer][4] = 22;
-
-	int initialCoins = testState.coins;
-	playCard(4, choice1, choice2, choice3, &testState);
-	if (testState.coins == (initialCoins + 2)) {
+	printf("\tTesting it correctly counts cards in discard.\n");
+	if (testState.discardCount[currentPlayer] == 1) {
 		test_passed();
 	}
-	else if (testState.coins != (initialCoins + 2)) {
+	else if (testState.discardCount[currentPlayer] != 1) {
 		test_failed();
-
-		printf("\t\tplayCard() did not correctly add coins.\n");
+		
+		printf("\t\tShould be 1 cards in DISCARD after playing council room.\n");
+		printf("\t\tThere are %d cards in DISCARD.\n", testState.discardCount[currentPlayer]);
 	}
+
+	/* Lists all the cards in the players hand/deck/discard for easy checking
+	int a;
+	int currentCard;
+	char cardName[20] = "";
+
+	printf("\n\nCards in HAND:\n");
+	for (a = 0; a < testState.handCount[currentPlayer]; a++) {
+	currentCard = testState.hand[currentPlayer][a];
+
+	cardNumToName(currentCard, cardName);
+	printf("The card in hand position %d is %s\n", a, cardName);
+	}
+
+	printf("\n\nCards in DECK:\n");
+	for (a = 0; a < testState.deckCount[currentPlayer]; a++) {
+		currentCard = testState.deck[currentPlayer][a];
+
+		cardNumToName(currentCard, cardName);
+		printf("The card in deck position %d is %s\n.", a, cardName);
+	}
+
+	printf("\n\nCards in DISCARD:\n");
+	for (a = 0; a < testState.discardCount[currentPlayer]; a++) {
+		currentCard = testState.discard[currentPlayer][a];
+
+		cardNumToName(currentCard, cardName);
+		printf("The card in discard position %d is %s\n.", a, cardName);
+	}
+	*/
 
 	printf("\n");
 
 	reportTestResults();
 	return 0;
-
-	/* Lists all the cards in the players hand for easy checking
-	int a;
-	int currentCard;
-	char cardName[20] = "";
-	for (a = 0; a < testState.handCount[currentPlayer]; a++) {
-	currentCard = testState.hand[currentPlayer][a];
-
-	cardNumToName(currentCard, cardName);
-	printf("The card in hand position %d is %s\n.", a, cardName);
-	}
-	*/
 }
 
 // Output that the test passed and increment TESTSPASSED and TOTALTESTS
