@@ -61,11 +61,6 @@ int main() {
 	for (a = 0; a < numPlayers; a++) {
 		printf("\tTesting the number of cards in PLAYER %d's hand.\n", a);
 		
-		/* DISCOVERED that the Adventurer card has a bug where it does not
-		** discard itself, as every action card should (and does) do when
-		** played!
-		*/
-
 		// Test hand of the player who played the Adventurer card
 		if (a == currentPlayer) {
 			if (testState.handCount[currentPlayer] == (gameState.handCount[currentPlayer] + cardsAdded - cardsDiscarded)) {
