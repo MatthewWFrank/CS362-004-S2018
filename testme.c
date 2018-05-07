@@ -1,18 +1,44 @@
+/* Author: Matthew Frank
+** Class: CS362
+** Assignment: Random Testing Quiz
+** Citation: The bulk of this code was provided by the professor of the class
+** - the only work I did was the implementation of inputChar() and inputString();
+*/
+
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
 #include<time.h>
 
+/* I decided to just brute force the random character creation
+** and lo and behold, it runs faster enough that it's worth
+** using it and ignoring anything fancier.
+*/
 char inputChar()
 {
-    // TODO: rewrite this function
-    return ' ';
+	char rando = '\0';
+	rando += (rand() % 127);
+    return rando;
 }
 
 char *inputString()
 {
-    // TODO: rewrite this function
-    return "";
+	/* My idea to use a pre-defined character set and make random selections from that
+	** comes from the StackOverflow answer by Ates Goral, found here:
+	** https://stackoverflow.com/questions/440133/how-do-i-create-a-random-alpha-numeric-string-in-c
+	*/
+
+	char *cPtr;
+	cPtr = (char*)malloc(6 * sizeof(char));
+
+	char listing[5] = { 'r', 'e', 's', 't', '\0' };
+
+	int counter;
+	for (counter = 0; counter < 5; counter++) {
+		cPtr[counter] = listing[rand() % 5];
+	}
+
+    return cPtr;
 }
 
 void testme()
@@ -53,5 +79,6 @@ int main(int argc, char *argv[])
 {
     srand(time(NULL));
     testme();
+
     return 0;
 }
