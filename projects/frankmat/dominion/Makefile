@@ -1,6 +1,6 @@
 CFLAGS = -Wall -fpic -coverage -lm
 
-default: unittestresults.out
+default: randomtestcard1.out randomtestcard2.out randomtestadventurer.out
 
 rngs.o: rngs.h rngs.c
 	gcc -c rngs.c -g  $(CFLAGS)
@@ -40,6 +40,12 @@ cardtest3: cardtest3.c dominion.o rngs.o
 cardtest4: cardtest4.c dominion.o rngs.o
 	gcc -o cardtest4 -g  cardtest4.c dominion.o rngs.o $(CFLAGS)
 
+randomtestcard1: randomtestcard1.c dominion.o interface.o rngs.o
+	gcc -o randomtestcard1 -g  randomtestcard1.c dominion.o interface.o rngs.o $(CFLAGS)
+
+randomtestcard2: randomtestcard2.c dominion.o interface.o rngs.o
+	gcc -o randomtestcard2 -g  randomtestcard2.c dominion.o interface.o rngs.o $(CFLAGS)
+
 testDrawCard: testDrawCard.c dominion.o rngs.o
 	gcc  -o testDrawCard -g  testDrawCard.c dominion.o rngs.o $(CFLAGS)
 
@@ -57,7 +63,7 @@ runtests: testDrawCard
 	gcov dominion.c >> unittestresult.out
 	cat dominion.c.gcov >> unittestresult.out
 
-unittestresults.out: unittest1.c unittest2.c unittest3.c unittest4.c cardtest1.c cardtest2.c cardtest3.c cardtest4.c dominion.c interface.c rngs.c
+unittestresults.out: unittest1.c unittest2.c unittest3.c unittest4.c cardtest1.c cardtest2.c cardtest3.c cardtest4.c randomtestcard1.c randomtestcard2.c dominion.c interface.c rngs.c
 	echo "Running my Dominion tests, correctly, I hope:" > unittestresults.out
 
 	echo "unittest1.c:" >> unittestresults.out
@@ -99,6 +105,40 @@ unittestresults.out: unittest1.c unittest2.c unittest3.c unittest4.c cardtest1.c
 	gcc -o cardtest4 dominion.c interface.c rngs.c cardtest4.c $(CFLAGS)
 	cardtest4 >> unittestresults.out
 	gcov -f dominion.c >> unittestresults.out
+
+	#echo "randomtestcard1.c:" >> unittestresults.out
+	#gcc -o randomtestcard1 dominion.c interface.c rngs.c randomtestcard1.c $(CFLAGS)
+	#randomtestcard1 >> unittestresults.out
+	#gcov -f dominion.c >> unittestresults.out
+
+	#echo "randomtestcard2.c:" >> unittestresults.out
+	#gcc -o randomtestcard2 dominion.c interface.c rngs.c randomtestcard2.c $(CFLAGS)
+	#randomtestcard2 >> unittestresults.out
+	#gcov -f dominion.c >> unittestresults.out
+
+randomtestcard1.out: randomtestcard1.c dominion.c interface.c rngs.c
+	echo "Running Random Great Hall Tests:" > randomtestcard1.out
+
+	echo "randomtestcard1.c:" >> randomtestcard1.out
+	gcc -o randomtestcard1 dominion.c interface.c rngs.c randomtestcard1.c $(CFLAGS)
+	randomtestcard1 >> randomtestcard1.out
+	gcov -f -b dominion.c >> randomtestcard1.out
+
+randomtestcard2.out: randomtestcard2.c dominion.c interface.c rngs.c
+	echo "Running Random Smithy Tests:" > randomtestcard2.out
+
+	echo "randomtestcard2.c:" >> randomtestcard2.out
+	gcc -o randomtestcard2 dominion.c interface.c rngs.c randomtestcard2.c $(CFLAGS)
+	randomtestcard2 >> randomtestcard2.out
+	gcov -f -b dominion.c >> randomtestcard2.out
+
+randomtestadventurer.out: randomtestadventurer.c dominion.c interface.c rngs.c
+	echo "Running Random Adventurer Tests:" > randomtestadventurer.out
+
+	echo "randomtestadventurer.c:" >> randomtestadventurer.out
+	gcc -o randomtestadventurer dominion.c interface.c rngs.c randomtestadventurer.c $(CFLAGS)
+	randomtestadventurer >> randomtestadventurer.out
+	gcov -f -b dominion.c >> randomtestadventurer.out	
 
 player: player.c interface.o
 	gcc -o player player.c -g dominion.o rngs.o interface.o $(CFLAGS)
