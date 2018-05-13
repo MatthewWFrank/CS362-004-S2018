@@ -65,13 +65,13 @@ int main() {
 
 		printf("Number of players: %d --- Whose turn it is: %d\n", numPlayers, randomPlayer);
 
-		// Copy the actual state to the test state and play the Great Hall card
+		// Copy the actual state to the test state and play the Adventurer card
 		memcpy(&test, &actual, sizeof(struct gameState));
 		cardEffect(adventurer, choice1, choice2, choice3, &test, handpos, &bonus); 
 
 		for (counter = 0; counter < numPlayers; counter++) {
 			printf("\tTesting the number of cards in PLAYER %d's hand.\n", counter);
-			// Test hand of the player who played the Great Hall card
+			// Test hand of the player who played the Adventurer card
 			if (counter == randomPlayer) {
 				if (test.handCount[counter] == (actual.handCount[counter] + numAddedCards - numDiscardedCards)) {
 					test_passed();
